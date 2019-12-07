@@ -34,23 +34,26 @@
   (reverse (map #(- (int %) 48) (str x))))
 
 (defn has-just-double
+  {:test (fn [] (is (has-just-double [1 1 2 2 3 3]))
+           (is (not (has-just-double [1 2 3 4 4 4])))
+           (is (has-just-double [1 1 1 1 2 2])))}
   [input]
   (let [[x y z] input]
-    (if (not (nil? y))
+    (if (nil? y)
+      false
       (if (= x y)
-        (if (= x z)
-          false
-          (vector x y))
-        (recur (rest input)))
-      false)))
+        (if (= x y z)
+         (recur (filter #(not (= x %)) input))
+         [x y])
+       (recur (rest input))))))
 
 (def second-result
   (for [x (range from-digit to-digit)
         :when (and (rising? (to-vector x))
-                   (has-just-double (reverse-to-vector x)))] x))
+                   (has-just-double (to-vector x)))] x))
 
-(defn maker [from-digit to-digit]
+(defn second-runner [from-digit to-digit]
   (for [x (range from-digit to-digit)
-        :when (and (has-just-double (reverse-to-vector x))
-                   (rising? (to-vector x)))] x))
+        :when (and (rising? (to-vector x))
+                   (has-just-double (to-vector x)))] x))
 
