@@ -20,13 +20,13 @@
 (defn jump-if-true
   [pos val1 addr1]
   (if (zero? val1)
-    pos
+    (+ pos 3)
     addr1))
 (defn jump-if-false
   [pos val1 addr1]
   (if (pos? val1)
     addr1
-    pos))
+    (+ pos 3)))
 (defn less-than
   [input val1 val2 addr]
   (if (< val1 val2)
@@ -65,11 +65,16 @@
       99 println
       #(println "error" %&))))
 
+(defn opcode-get
+  [input addr]
+  (get input addr))
+
 
 (defn intcode-comp
   {:test (fn [] (is (= 6 (intcode-comp [01 4 5 0 03 3 99])))
            (is (= 16 (intcode-comp [102 4 1 0 04 0 99])))
-           (is (= 3 (intcode-comp [3 9 8 9 10 9 4 9 99 -1 8]))))}
+           (is (= 3 (intcode-comp [3 9 8 9 10 9 4 9 99 -1 8])))
+           (is (= 1 (intcode-comp [8 2 2 0 99]))))}
   [input]
   (let [startvalue 1]
     (loop [input input
@@ -77,15 +82,15 @@
       (condp contains? (mod (get input pos) 10)
         #{9 nil} (do (println input) (first input))
         #{8}
-        (recur (eq input (get input (+ pos 1)) (get input (+ pos 2)) (get input (+ pos 3)))
+        (recur (eq input (opcode-get input (+ pos 1)) (opcode-get input (+ pos 2)) (opcode-get input (+ pos 3)))
          (+ pos 4))
         #{7}
-        (recur (less-than input (get input (+ pos 1)) (get input (+ pos 2)) (get input (+ pos 3)))
+        (recur (less-than input (opcode-get input (+ pos 1)) (opcode-get input (+ pos 2)) (opcode-get input (+ pos 3)))
          (+ pos 4))
         #{6}
-        (recur input (jump-if-false pos (get input (+ pos 1)) (get input (+ pos 2))))
+        (recur input (jump-if-false pos (opcode-get input (+ pos 1)) (opcode-get input (+ pos 2))))
         #{5}
-        (recur input (jump-if-true pos (get input (+ pos 1)) (get input (+ pos 2))))
+        (recur input (jump-if-true pos (opcode-get input (+ pos 1)) (opcode-get input (+ pos 2))))
         #{3 4}
         (recur ((opcode (get input pos))
                 input
