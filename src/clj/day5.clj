@@ -11,7 +11,7 @@
 
 (defn add-op
   {:test (fn [] (is (= [5 2 3 4] (add-op [1 2 3 4] 2 3 0))))}
-  [input val1 val2 addr]
+  [input pos]
   (assoc input addr (+ val1 val2)))
 (defn mult-op
   {:test (fn [] (is (= [6 2 3 4] (mult-op [1 2 3 4] 2 3 0))))}
@@ -104,3 +104,25 @@
                 (get input (+ pos 2))
                 (get input (+ pos 3)))
                (+ pos 4))))))
+
+(defn add-vals
+  [input pos]
+  )
+
+(defn compute
+  [input]
+  (let [startvalue 1]
+    (loop [input input
+           pos 0]
+      (condp = (mod (get input pos) 10)
+        nil nil
+        9 (do (println input))
+        8 (recur (equal input pos) (+ pos 4))
+        7 (recur (less-than input pos) (+ pos 4))
+        6 (recur input (jump-if-false input pos))
+        5 (recur input (jump-if-true input pos))
+        4 (recur (output-val input pos) (+ pos 2))
+        3 (recur (input-val input pos) (+ pos 2))
+        2 (recur (multiply-vals input pos) (+ pos 4))
+        1 (recur (add-vals input pos) (+ pos 4))
+        ))))
