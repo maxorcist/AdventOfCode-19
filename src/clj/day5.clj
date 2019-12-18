@@ -69,19 +69,19 @@
       (assoc input addr 0))))
 
 (defn compute
-  [input]
-  (let [startvalue 5]
-    (loop [input input
-           pos 0]
-      (condp = (mod (get input pos) 10)
-        nil nil
-        9 (do (println (take 10 input)))
-        8 (recur (equal input pos) (+ pos 4))
-        7 (recur (less-than input pos) (+ pos 4))
-        6 (recur input (jump-if-false input pos))
-        5 (recur input (jump-if-true input pos))
-        4 (recur (output-val input pos) (+ pos 2))
-        3 (recur (input-val input pos startvalue) (+ pos 2))
-        2 (recur (multiply-vals input pos) (+ pos 4))
-        1 (recur (add-vals input pos) (+ pos 4))
-        ))))
+  ([input] (compute input 5))
+  ([input startvalue]
+   (loop [input input
+          pos 0]
+     (condp = (mod (get input pos) 10)
+       nil nil
+       9 "hej";(do (println (last input)))
+       8 (recur (equal input pos) (+ pos 4))
+       7 (recur (less-than input pos) (+ pos 4))
+       6 (recur input (jump-if-false input pos))
+       5 (recur input (jump-if-true input pos))
+       4 (recur (output-val input pos) (+ pos 2))
+       3 (recur (input-val input pos startvalue) (+ pos 2))
+       2 (recur (multiply-vals input pos) (+ pos 4))
+       1 (recur (add-vals input pos) (+ pos 4))
+       ))))
